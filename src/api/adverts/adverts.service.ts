@@ -32,7 +32,7 @@ export class AdvertsService {
     return getAdvertsByUserId;
   }
 
-  async setModerateAdmin(userId) {
+  async setModerateAdvert(userId) {
     const getUserId = this.userRepository.findOne({ where: { id: userId } });
     return getUserId;
   }

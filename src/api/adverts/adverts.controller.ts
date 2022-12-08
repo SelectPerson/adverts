@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AdvertsService } from './adverts.service';
 import { CreateAdvertDto } from './dto/create-advert-dto';
+import { IsAdminGuard } from '../../guards/main/isAdmin.guard';
 
 @Controller('adverts')
 export class AdvertsController {
@@ -11,6 +12,7 @@ export class AdvertsController {
     return this.advertsService.createAdvert(advertDto);
   }
 
+  @UseGuards(IsAdminGuard)
   @Get()
   getAdvertsAll() {
     return this.advertsService.getAdvertsAll();
@@ -23,6 +25,6 @@ export class AdvertsController {
 
   @Post('moderate')
   setModerateAdmin(@Body() { id }) {
-    return this.advertsService.setModerateAdmin(id);
+    return this.advertsService.setModerateAdvert(id);
   }
 }
