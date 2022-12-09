@@ -1,18 +1,28 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AdvertsService } from './adverts.service';
 import { CreateAdvertDto } from './dto/create-advert-dto';
-import { IsAdminGuard } from '../../guards/main/isAdmin.guard';
+import { isAuthGuard } from '../../guards/main/isAuth.guard';
+import { isAdminGuard } from '../../guards/main/isAdmin.guard';
 
 @Controller('adverts')
 export class AdvertsController {
   constructor(private advertsService: AdvertsService) {}
 
+  @UseGuards(isAuthGuard)
   @Post()
-  create(@Body() advertDto: CreateAdvertDto) {
-    return this.advertsService.createAdvert(advertDto);
+  create(@Body() advertDto: CreateAdvertDto, @Req() req) {
+    const userId = req.user.user.id;
+    return this.advertsService.createAdvert(userId, advertDto);
   }
 
-  @UseGuards(IsAdminGuard)
   @Get()
   getAdvertsAll() {
     return this.advertsService.getAdvertsAll();
@@ -24,6 +34,7 @@ export class AdvertsController {
   }
 
   @Post('moderate')
+  @UseGuards(isAdminGuard)
   setModerateAdmin(@Body() { id }) {
     return this.advertsService.setModerateAdvert(id);
   }

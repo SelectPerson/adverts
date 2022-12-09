@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class isAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(
@@ -22,7 +22,7 @@ export class JwtAuthGuard implements CanActivate {
 
       if (bearer !== 'Bearer' || !token) {
         throw new UnauthorizedException({
-          message: 'Пользователь не авторизован',
+          message: 'User not auth',
         });
       }
 
@@ -31,7 +31,7 @@ export class JwtAuthGuard implements CanActivate {
       return true;
     } catch (e) {
       throw new UnauthorizedException({
-        message: 'Пользователь не авторизован',
+        message: 'User not auth',
       });
     }
   }

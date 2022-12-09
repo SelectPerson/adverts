@@ -5,6 +5,7 @@ export class CreateAdvertDto implements iAdvert {
   readonly title: string;
   readonly description: string;
   readonly byUser: number;
+  readonly userId: number;
   readonly byModerated: string;
   readonly isModerated: boolean;
 }

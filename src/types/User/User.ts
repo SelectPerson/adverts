@@ -1,4 +1,7 @@
-export type userRoleTypes = 'admin' | 'user';
+export const enum userRoleTypes {
+  ADMIN = 'admin',
+  USER = 'user',
+}
 
 export interface iUser {
   id: number;

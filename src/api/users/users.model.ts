@@ -1,9 +1,9 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { iUser } from '../../types/User/User';
+import { iUser, userRoleTypes } from '../../types/User/User';
 import { AdvertsModel } from '../adverts/adverts.model';
 
 @Table({ tableName: 'users' })
-export class UsersModel extends Model<UsersModel, iUser> {
+export class UsersModel extends Model<UsersModel, iUser> implements iUser {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -30,6 +30,11 @@ export class UsersModel extends Model<UsersModel, iUser> {
     allowNull: false,
   })
   phone: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  role: userRoleTypes;
 
   @Column({
     type: DataType.STRING,

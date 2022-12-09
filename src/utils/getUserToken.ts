@@ -1,19 +1,8 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-@Injectable()
-export class isAdminGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
-
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+export class getUserToken {
+  constructor(private context, private jwtService: JwtService) {
     const req = context.switchToHttp().getRequest();
     try {
       const authHeader = req.headers.authorization;
@@ -28,10 +17,10 @@ export class isAdminGuard implements CanActivate {
 
       const user = this.jwtService.verify(token);
       req.user = user;
-      return user.role === 'admin';
+      return user;
     } catch (e) {
       throw new UnauthorizedException({
-        message: 'Error',
+        message: 'User not auth',
       });
     }
   }

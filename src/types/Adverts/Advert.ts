@@ -3,6 +3,7 @@ export interface iAdvert {
   title: string;
   description: string;
   byUser: number;
+  userId: number;
   byModerated: string;
   isModerated: boolean;
 }

@@ -11,8 +11,8 @@ export class AdvertsService {
     @InjectModel(UsersModel) private userRepository: typeof UsersModel,
   ) {}
 
-  async createAdvert(dto: CreateAdvertDto) {
-    const advert = await this.advertRepository.create(dto);
+  async createAdvert(userId: number, dto: CreateAdvertDto) {
+    const advert = await this.advertRepository.create({ userId, ...dto });
     return advert;
   }
 

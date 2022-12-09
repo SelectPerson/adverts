@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModel } from './api/users/users.model';
 import { AdvertsModel } from './api/adverts/adverts.model';
 import { AdvertsModule } from './api/adverts/adverts.module';
+import { AuthModule } from './api/auth/auth.module';
 
 @Module({
   controllers: [],
@@ -26,6 +27,7 @@ import { AdvertsModule } from './api/adverts/adverts.module';
     }),
     UsersModule,
     AdvertsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
