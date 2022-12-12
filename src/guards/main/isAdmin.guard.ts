@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
+import { userRoleTypes } from '../../types/User/User';
 
 @Injectable()
 export class isAdminGuard implements CanActivate {
@@ -28,10 +29,11 @@ export class isAdminGuard implements CanActivate {
 
       const user = this.jwtService.verify(token);
       req.user = user;
-      return user.role === 'admin';
+      console.log('req.user.role', user.user.role);
+      return user.user.role === userRoleTypes.ADMIN;
     } catch (e) {
       throw new UnauthorizedException({
-        message: 'Error',
+        message: 'User not auth',
       });
     }
   }

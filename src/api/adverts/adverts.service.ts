@@ -1,8 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateAdvertDto } from './dto/create-advert-dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { AdvertsModel } from './adverts.model';
 import { UsersModel } from '../users/users.model';
+import { UpdateAdvertDto } from './dto/update-advert-dto';
+import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
 @Injectable()
 export class AdvertsService {
@@ -13,14 +20,20 @@ export class AdvertsService {
 
   async createAdvert(userId: number, dto: CreateAdvertDto) {
     const advert = await this.advertRepository.create({ userId, ...dto });
-    return advert;
+    return {
+      status: HttpStatus.OK,
+      advert,
+    };
   }
 
   async getAdvertsAll() {
     const adverts = await this.advertRepository.findAll({
       include: { all: true },
     });
-    return adverts;
+    return {
+      status: HttpStatus.OK,
+      adverts,
+    };
   }
 
   async getAdvertsByUserId(userId) {
@@ -29,11 +42,40 @@ export class AdvertsService {
         userId,
       },
     });
-    return getAdvertsByUserId;
+    return {
+      status: HttpStatus.OK,
+      getAdvertsByUserId,
+    };
   }
 
-  async setModerateAdvert(userId) {
-    const getUserId = this.userRepository.findOne({ where: { id: userId } });
-    return getUserId;
+  async updateAdvertById(id, updateAdvertDto: UpdateAdvertDto) {
+    const advert = await this.advertRepository.findOne({ where: { id } });
+    const result = await advert.update({ ...advert, ...updateAdvertDto });
+    if (advert.isModerated)
+      return {
+        status: HttpStatus.OK,
+        result,
+      };
+    throw new HttpException(
+      'Advert is not moderated by Admin',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+
+  async setModerateAdvert(id, updateAdvertDto: UpdateAdvertDto) {
+    let isModerated;
+
+    const advert = await this.advertRepository.findOne({ where: { id } });
+    if (!advert.isModerated) isModerated = true;
+    const result = await advert.update({
+      ...advert,
+      isModerated,
+      ...updateAdvertDto,
+    });
+
+    return {
+      status: HttpStatus.OK,
+      result,
+    };
   }
 }

@@ -6,11 +6,11 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { iAdvert } from '../../types/Adverts/Advert';
 import { UsersModel } from '../users/users.model';
+import { iAdvert } from '../../types/Adverts/Advert';
 
 @Table({ tableName: 'adverts' })
-export class AdvertsModel extends Model<AdvertsModel, iAdvert> {
+export class AdvertsModel extends Model implements iAdvert {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -41,9 +41,4 @@ export class AdvertsModel extends Model<AdvertsModel, iAdvert> {
     type: DataType.BOOLEAN,
   })
   isModerated: boolean;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  byModerated: string;
 }

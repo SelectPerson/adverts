@@ -40,11 +40,15 @@ export class AuthService {
   }
 
   private async generateToken(user: UsersModel) {
-    const payload = { user };
+    const payload = { ...user.dataValues };
+    delete payload.password;
 
     return {
-      user,
-      token: this.jwtService.sign(payload),
+      status: HttpStatus.OK,
+      user: payload,
+      token: this.jwtService.sign({
+        user: payload,
+      }),
     };
   }
 

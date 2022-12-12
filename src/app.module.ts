@@ -6,6 +6,8 @@ import { UsersModel } from './api/users/users.model';
 import { AdvertsModel } from './api/adverts/adverts.model';
 import { AdvertsModule } from './api/adverts/adverts.module';
 import { AuthModule } from './api/auth/auth.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { ProfileModule } from './api/profile/profile.module';
 
 @Module({
   controllers: [],
@@ -25,9 +27,13 @@ import { AuthModule } from './api/auth/auth.module';
       autoLoadModels: true,
       synchronize: true,
     }),
+    TelegrafModule.forRoot({
+      token: process.env.TELEGRAM_BOT_TOKEN,
+    }),
     UsersModule,
     AdvertsModule,
     AuthModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

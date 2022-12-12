@@ -3,7 +3,7 @@ import { iUser, userRoleTypes } from '../../types/User/User';
 import { AdvertsModel } from '../adverts/adverts.model';
 
 @Table({ tableName: 'users' })
-export class UsersModel extends Model<UsersModel, iUser> implements iUser {
+export class UsersModel extends Model implements iUser {
   @Column({
     type: DataType.INTEGER,
     unique: true,
