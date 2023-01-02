@@ -8,10 +8,17 @@ import { AdvertsModule } from './api/adverts/adverts.module';
 import { AuthModule } from './api/auth/auth.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ProfileModule } from './api/profile/profile.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './guards/tokens';
 
 @Module({
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,

@@ -5,9 +5,9 @@ export const enum userRoleTypes {
 
 export interface iUser {
   id: number;
-  name: string;
+  name?: string;
   email: string;
-  phone: string;
-  role: userRoleTypes;
+  phone?: string;
+  role?: userRoleTypes;
   password: string;
 }

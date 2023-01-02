@@ -2,24 +2,32 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   Param,
   Post,
   Put,
   Req,
+  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AdvertsService } from './adverts.service';
 import { CreateAdvertDto } from './dto/create-advert-dto';
-import { isAuthGuard } from '../../guards/main/isAuth.guard';
 import { isAdminGuard } from '../../guards/main/isAdmin.guard';
 import { UpdateAdvertDto } from './dto/update-advert-dto';
+import { Public } from '../../decorators/public.decorator';
 
 @Controller('adverts')
 export class AdvertsController {
   constructor(private advertsService: AdvertsService) {}
 
-  @UseGuards(isAuthGuard)
+  @Public()
+  @Get('test')
+  test(@Session() session: Record<string, any>) {
+    session.visits = session.visits ? session.visits + 1 : 1;
+    return session.visits;
+  }
+
+  // @UseGuards(isAuthGuard)
+  // @UseGuards(AtGuard)
   @Post()
   create(@Body() advertDto: CreateAdvertDto, @Req() req) {
     const userId = req.user.user.id;

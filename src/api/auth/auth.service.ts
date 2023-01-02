@@ -9,6 +9,10 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersModel } from '../users/users.model';
+import { Tokens } from '../../types/Auth/Tokens';
+import { JwtPayload } from '../../types/Auth/JwtPayload';
+import { AuthDto } from './auth-dto/auth.dto';
+import { LoginDto } from './auth/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +21,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
+  async login(authDto: AuthDto) {
+    const user = await this.validateUser(authDto);
+
     return this.generateToken(user);
   }
 
@@ -52,10 +57,10 @@ export class AuthService {
     };
   }
 
-  private async validateUser(userDto: CreateUserDto) {
-    const user = await this.userService.getUserByEmail(userDto.email);
+  private async validateUser(authDto: LoginDto) {
+    const user = await this.userService.getUserByEmail(authDto.email);
     const passwordEquals = await bcrypt.compare(
-      userDto.password,
+      authDto.password,
       user.password,
     );
 
@@ -66,5 +71,32 @@ export class AuthService {
     throw new UnauthorizedException({
       message: 'Wrong email or password',
     });
+  }
+
+  async refreshToken() {
+    return 'refresh token';
+  }
+
+  async getTokens(userId: number, email: string): Promise<Tokens> {
+    const jwtPayload: JwtPayload = {
+      sub: userId,
+      email: email,
+    };
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: process.env.ACCESS_TOKEN_EXPIRED,
+        expiresIn: '15m',
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: process.env.SECRET_TOKEN_EXPIRED,
+        expiresIn: '7d',
+      }),
+    ]);
+
+    return {
+      access_token: at,
+      refresh_token: rt,
+    };
   }
 }
