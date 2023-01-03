@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from './core/pipes/validation.pipe';
-import * as session from 'express-session';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
@@ -9,13 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await app.setGlobalPrefix('api');
   await app.useGlobalPipes(new ValidationPipe());
-  await app.use(
-    session({
-      secret: 'keyboard',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
+  app.use(cookieParser());
+  app.enableCors({
+    credentials: true,
+  });
+
   await app.listen(PORT, () => {
     console.log(`Server started on port: ${PORT}`);
   });

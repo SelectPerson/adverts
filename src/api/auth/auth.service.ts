@@ -12,7 +12,6 @@ import { UsersModel } from '../users/users.model';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { TokensService } from '../tokens/tokens.service';
-import { JwtPayload } from '../../types/Auth/JwtPayload';
 
 @Injectable()
 export class AuthService {
@@ -27,9 +26,7 @@ export class AuthService {
 
     if (!user?.id && !user?.email) throw HttpStatus.BAD_REQUEST;
 
-    const generateTokens = await this.generateTokens(user);
-
-    return generateTokens;
+    return await this.generateTokens(user);
   }
 
   async registration(userDto: CreateUserDto) {
@@ -67,8 +64,8 @@ export class AuthService {
       }),
 
       this.jwtService.signAsync(userPayload, {
-        secret: process.env.SECRET_TOKEN_SECRET,
-        expiresIn: process.env.SECRET_TOKEN_EXPIRED,
+        secret: process.env.REFRESH_TOKEN_SECRET,
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRED,
       }),
     ]);
 
