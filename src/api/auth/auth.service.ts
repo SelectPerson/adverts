@@ -21,15 +21,15 @@ export class AuthService {
     private tokenService: TokensService,
   ) {}
 
-  async login(validateDto: LoginDto) {
+  async login(validateDto: LoginDto, currentRefreshToken) {
     const user = await this.validateUser(validateDto);
 
     if (!user?.id && !user?.email) throw HttpStatus.BAD_REQUEST;
 
-    return await this.generateTokens(user);
+    return await this.generateTokens(user.dataValues, currentRefreshToken);
   }
 
-  async registration(userDto: CreateUserDto) {
+  async registration(userDto: CreateUserDto, currentRefreshToken) {
     const candidate = await this.userService.getUserByEmail(userDto.email);
     if (candidate) {
       throw new HttpException(
@@ -44,42 +44,11 @@ export class AuthService {
       password: hashPassword,
     });
 
-    const generateTokens = await this.generateTokens(user);
-
-    return {
-      status: HttpStatus.OK,
-      user,
-      tokens: generateTokens,
-    };
-  }
-
-  private async generateTokens(user: UsersModel) {
-    const userPayload = { ...user.dataValues };
-    delete userPayload.password;
-
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(userPayload, {
-        secret: process.env.ACCESS_TOKEN_SECRET,
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRED,
-      }),
-
-      this.jwtService.signAsync(userPayload, {
-        secret: process.env.REFRESH_TOKEN_SECRET,
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRED,
-      }),
-    ]);
-
-    await this.tokenService.createRefreshToken({
-      userId: user.id,
-      refreshToken: rt,
-    });
-
-    return {
-      status: HttpStatus.OK,
-      user: userPayload,
-      access_token: at,
-      refresh_token: rt,
-    };
+    const generateTokens = await this.generateTokens(
+      user.dataValues,
+      currentRefreshToken,
+    );
+    return generateTokens;
   }
 
   private async validateUser(validateDto: LoginDto | RegisterDto) {
@@ -98,7 +67,35 @@ export class AuthService {
     });
   }
 
-  async refreshToken() {
-    return 'refresh token';
+  async generateTokens(user: UsersModel, currentRefreshToken) {
+    const userPayload = { ...user };
+    delete userPayload.password;
+
+    console.log('currentRefreshToken', currentRefreshToken);
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(userPayload, {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRED,
+      }),
+
+      this.jwtService.signAsync(userPayload, {
+        secret: process.env.REFRESH_TOKEN_SECRET,
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRED,
+      }),
+    ]);
+
+    await this.tokenService.releaseRefreshToken({
+      userId: user.id,
+      refreshToken: rt,
+      currentRefreshToken: currentRefreshToken,
+    });
+
+    return {
+      status: HttpStatus.OK,
+      user: userPayload,
+      accessToken: at,
+      refreshToken: rt,
+    };
   }
 }

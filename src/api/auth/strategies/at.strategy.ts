@@ -12,8 +12,6 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload) {
-    console.log('payload', payload);
-
     return payload;
   }
 }

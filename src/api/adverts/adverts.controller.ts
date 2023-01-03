@@ -1,18 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  Req,
-  Session,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { AdvertsService } from './adverts.service';
 import { CreateAdvertDto } from './dto/create-advert.dto';
 import { UpdateAdvertDto } from './dto/update-advert.dto';
-import { Public } from '../../core/decorators/public.decorator';
+import { Public } from '../../core/decorators';
 
 @Controller('adverts')
 export class AdvertsController {
@@ -20,9 +10,8 @@ export class AdvertsController {
 
   @Public()
   @Get('test')
-  test(@Session() session: Record<string, any>) {
-    session.visits = session.visits ? session.visits + 1 : 1;
-    return session.visits;
+  test() {
+    return 1;
   }
 
   @Post()

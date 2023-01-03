@@ -1,16 +1,24 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { Public } from '../../core/decorators/public.decorator';
+import { Public } from '../../core/decorators';
 import { LoginDto } from './dto/login.dto';
-import { Response, Request } from 'express';
-import { RtGuard } from '../../core/guards/tokens';
-import { GetCurrentUserId } from '../../core/decorators/get-current-user-id.decorator';
-import { GetCurrentUser } from '../../core/decorators/get-current-user.decorator';
+import { Request, Response } from 'express';
+import { TokensService } from '../tokens/tokens.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tokenService: TokensService,
+  ) {}
+
+  async setCookieJwt(response, refreshToken) {
+    return await response.cookie('jwt', refreshToken, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 1000,
+    });
+  }
 
   @Public()
   @Post('/login')
@@ -19,24 +27,34 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const result = await this.authService.login(loginDto);
-    // await response.cookie('jwt', result.refresh_token, {
-    //   httpOnly: true,
-    //   maxAge: 30 * 24 * 60 * 1000,
-    // });
-    return result;
+    try {
+      const result = await this.authService.login(
+        loginDto,
+        request.cookies.jwt,
+      );
+      await this.setCookieJwt(response, result.refreshToken);
+      return result;
+    } catch (e) {
+      return e;
+    }
   }
 
   @Public()
   @Post('/register')
-  registration(@Body() userDto: CreateUserDto) {
-    return this.authService.registration(userDto);
-  }
-
-  @Public()
-  @UseGuards(RtGuard)
-  @Post('/refresh')
-  refresh() {
-    return 1;
+  async registration(
+    @Body() userDto: CreateUserDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      const result = await this.authService.registration(
+        userDto,
+        request.cookies.jwt,
+      );
+      await this.setCookieJwt(response, result.refreshToken);
+      return result;
+    } catch (e) {
+      return e;
+    }
   }
 }

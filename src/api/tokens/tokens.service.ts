@@ -8,17 +8,26 @@ export class TokensService {
     @InjectModel(TokensModel) private tokenRepository: typeof TokensModel,
   ) {}
 
-  async createRefreshToken({ userId, refreshToken }) {
-    const result = await this.tokenRepository.create({
-      userId,
-      refreshToken,
+  async releaseRefreshToken({ userId, refreshToken, currentRefreshToken }) {
+    const existingToken = await this.tokenRepository.findOne({
+      where: {
+        refreshToken: currentRefreshToken,
+        userId: userId,
+      },
     });
+
+    if (existingToken) {
+      await existingToken.update({ ...existingToken, refreshToken });
+    } else {
+      await this.tokenRepository.create({
+        userId,
+        refreshToken,
+      });
+    }
 
     return {
       status: HttpStatus.OK,
-      result,
+      refreshToken: existingToken,
     };
   }
-
-  async updateRefreshToken({ userId, refreshToken }) {}
 }
