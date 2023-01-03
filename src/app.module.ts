@@ -14,6 +14,13 @@ import { TokensModule } from './api/tokens/tokens.module';
 
 @Module({
   controllers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
+
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -39,13 +46,6 @@ import { TokensModule } from './api/tokens/tokens.module';
     AuthModule,
     ProfileModule,
     TokensModule,
-  ],
-
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    },
   ],
 })
 export class AppModule {}

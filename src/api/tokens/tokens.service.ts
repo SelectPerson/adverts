@@ -19,4 +19,6 @@ export class TokensService {
       result,
     };
   }
+
+  async updateRefreshToken({ userId, refreshToken }) {}
 }

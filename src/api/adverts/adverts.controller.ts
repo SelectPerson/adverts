@@ -27,7 +27,7 @@ export class AdvertsController {
 
   @Post()
   create(@Body() advertDto: CreateAdvertDto, @Req() req) {
-    const userId = req.user.user.id;
+    const userId = req.user.payload.id;
     return this.advertsService.createAdvert(userId, advertDto);
   }
 

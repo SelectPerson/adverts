@@ -7,6 +7,6 @@ export class ProfileController {
 
   @Get()
   getProfile(@Req() req) {
-    return req.user.user;
+    return req.user.payload;
   }
 }

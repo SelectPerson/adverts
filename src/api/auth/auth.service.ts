@@ -12,6 +12,7 @@ import { UsersModel } from '../users/users.model';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { TokensService } from '../tokens/tokens.service';
+import { JwtPayload } from '../../types/Auth/JwtPayload';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +28,8 @@ export class AuthService {
     if (!user?.id && !user?.email) throw HttpStatus.BAD_REQUEST;
 
     const generateTokens = await this.generateTokens(user);
-    // await this.tokenService.createRefreshToken(user.id, );
 
-    return {
-      status: HttpStatus.OK,
-      user,
-      tokens: generateTokens,
-    };
+    return generateTokens;
   }
 
   async registration(userDto: CreateUserDto) {
@@ -61,16 +57,16 @@ export class AuthService {
   }
 
   private async generateTokens(user: UsersModel) {
-    const jwtPayload = { ...user.dataValues };
-    delete jwtPayload.password;
+    const userPayload = { ...user.dataValues };
+    delete userPayload.password;
 
     const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
+      this.jwtService.signAsync(userPayload, {
         secret: process.env.ACCESS_TOKEN_SECRET,
         expiresIn: process.env.ACCESS_TOKEN_EXPIRED,
       }),
 
-      this.jwtService.signAsync(jwtPayload, {
+      this.jwtService.signAsync(userPayload, {
         secret: process.env.SECRET_TOKEN_SECRET,
         expiresIn: process.env.SECRET_TOKEN_EXPIRED,
       }),
@@ -82,17 +78,11 @@ export class AuthService {
     });
 
     return {
+      status: HttpStatus.OK,
+      user: userPayload,
       access_token: at,
       refresh_token: rt,
     };
-
-    // return {
-    //   status: HttpStatus.OK,
-    //   user: payload,
-    //   token: this.jwtService.sign({
-    //     user: payload,
-    //   }),
-    // };
   }
 
   private async validateUser(validateDto: LoginDto | RegisterDto) {
