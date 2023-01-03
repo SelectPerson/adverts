@@ -9,18 +9,14 @@ import { AuthModule } from './api/auth/auth.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ProfileModule } from './api/profile/profile.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from './guards/tokens';
+import { AtGuard } from './core/guards/tokens';
+import { TokensModule } from './api/tokens/tokens.module';
 
 @Module({
   controllers: [],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    },
-  ],
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     SequelizeModule.forRoot({
@@ -34,6 +30,7 @@ import { AtGuard } from './guards/tokens';
       autoLoadModels: true,
       synchronize: true,
     }),
+
     TelegrafModule.forRoot({
       token: process.env.TELEGRAM_BOT_TOKEN,
     }),
@@ -41,6 +38,14 @@ import { AtGuard } from './guards/tokens';
     AdvertsModule,
     AuthModule,
     ProfileModule,
+    TokensModule,
+  ],
+
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
   ],
 })
 export class AppModule {}

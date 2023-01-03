@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from './pipes/validation.pipe';
+import { ValidationPipe } from './core/pipes/validation.pipe';
 import * as session from 'express-session';
 
 async function bootstrap() {

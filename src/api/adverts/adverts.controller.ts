@@ -10,10 +10,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AdvertsService } from './adverts.service';
-import { CreateAdvertDto } from './dto/create-advert-dto';
-import { isAdminGuard } from '../../guards/main/isAdmin.guard';
-import { UpdateAdvertDto } from './dto/update-advert-dto';
-import { Public } from '../../decorators/public.decorator';
+import { CreateAdvertDto } from './dto/create-advert.dto';
+import { UpdateAdvertDto } from './dto/update-advert.dto';
+import { Public } from '../../core/decorators/public.decorator';
 
 @Controller('adverts')
 export class AdvertsController {
@@ -26,8 +25,6 @@ export class AdvertsController {
     return session.visits;
   }
 
-  // @UseGuards(isAuthGuard)
-  // @UseGuards(AtGuard)
   @Post()
   create(@Body() advertDto: CreateAdvertDto, @Req() req) {
     const userId = req.user.user.id;
@@ -49,7 +46,6 @@ export class AdvertsController {
     return this.advertsService.updateAdvertById(+id, advertDto);
   }
 
-  @UseGuards(isAdminGuard)
   @Put('moderate/:id')
   setModerateAdmin(@Param('id') id, @Body() advertDto: UpdateAdvertDto) {
     return this.advertsService.setModerateAdvert(id, advertDto);

@@ -1,15 +1,9 @@
-import {
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { CreateAdvertDto } from './dto/create-advert-dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateAdvertDto } from './dto/create-advert.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { AdvertsModel } from './adverts.model';
 import { UsersModel } from '../users/users.model';
-import { UpdateAdvertDto } from './dto/update-advert-dto';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { UpdateAdvertDto } from './dto/update-advert.dto';
 
 @Injectable()
 export class AdvertsService {
