@@ -13,7 +13,9 @@ import { RtGuard } from '../../core/guards/tokens';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
 import { setCookieJwt } from '../../core/utils/setCookieJwt.utils';
-import { Response, response } from 'express';
+import { Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { iUser } from '../../types/User/User';
 
 @Controller('tokens')
 export class TokensController {
@@ -21,29 +23,35 @@ export class TokensController {
     private tokenService: TokensService,
     private authService: AuthService,
     private userService: UsersService,
+    private jwtService: JwtService,
   ) {}
 
   @Public()
-  @UseGuards(RtGuard)
+  // @UseGuards(RtGuard)
   @Post('/refresh')
   async refresh(
     @Req() request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const refreshToken = request?.cookies?.jwt;
-
-    if (!refreshToken)
+    const currentRefreshToken = request?.cookies?.jwt;
+    if (!currentRefreshToken)
       throw new HttpException('Refresh token not found', HttpStatus.FORBIDDEN);
-
-    const userId = request.user.id;
+    const decodeUserToken: any = this.jwtService.decode(currentRefreshToken);
+    // console.log('decodeToken', decodeUserToken.id);
+    // if (!refreshToken)
+    //
+    //
+    const userId = decodeUserToken.id;
     const getUser = await this.userService.getUserById(userId);
     const result = await this.authService.generateTokens(
       getUser.dataValues,
-      refreshToken,
+      currentRefreshToken,
     );
 
-    await setCookieJwt(response, refreshToken);
-
     return result;
+    //
+    // await setCookieJwt(response, refreshToken);
+
+    // return result;
   }
 }

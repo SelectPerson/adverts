@@ -67,23 +67,28 @@ export class AuthService {
     const userPayload = { ...user };
     delete userPayload.password;
 
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(userPayload, {
-        secret: process.env.ACCESS_TOKEN_SECRET,
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRED,
-      }),
+    console.log('currentRefreshToken', currentRefreshToken);
 
-      this.jwtService.signAsync(userPayload, {
+    const at = await this.jwtService.signAsync(userPayload, {
+      secret: process.env.ACCESS_TOKEN_SECRET,
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRED,
+    });
+
+    let rt;
+
+    if (currentRefreshToken) {
+      rt = await currentRefreshToken;
+    } else {
+      rt = await this.jwtService.signAsync(userPayload, {
         secret: process.env.REFRESH_TOKEN_SECRET,
         expiresIn: process.env.REFRESH_TOKEN_EXPIRED,
-      }),
-    ]);
+      });
 
-    await this.tokenService.releaseRefreshToken({
-      userId: user.id,
-      refreshToken: rt,
-      currentRefreshToken: currentRefreshToken,
-    });
+      await this.tokenService.releaseRefreshToken({
+        userId: user.id,
+        refreshToken: rt,
+      });
+    }
 
     return {
       status: HttpStatus.OK,

@@ -21,15 +21,21 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
+    const currentRefreshToken = request?.cookies?.jwt;
+
     try {
       const result = await this.authService.login(
         loginDto,
-        request.cookies.jwt,
+        currentRefreshToken,
       );
-      await setCookieJwt(response, result.refreshToken);
+
+      if (!currentRefreshToken) {
+        await setCookieJwt(response, result.refreshToken);
+      }
+
       return result;
     } catch (e) {
-      return e;
+      return 'Auth Error';
     }
   }
 
@@ -40,15 +46,20 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
+    const currentRefreshToken = request.cookies.jwt;
+
     try {
       const result = await this.authService.registration(
         userDto,
-        request.cookies.jwt,
+        currentRefreshToken,
       );
-      await setCookieJwt(response, result.refreshToken);
+
+      if (!currentRefreshToken) {
+        await setCookieJwt(response, currentRefreshToken);
+      }
       return result;
     } catch (e) {
-      return e;
+      return 'Register Error';
     }
   }
 }
