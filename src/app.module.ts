@@ -11,6 +11,9 @@ import { ProfileModule } from './api/profile/profile.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './core/guards/tokens';
 import { TokensModule } from './api/tokens/tokens.module';
+import { ImagesModule } from './api/images/images.module';
+import { ImagesModel } from './api/images/images.model';
+import { ImagesTypeModel } from './api/images/images-type.model';
 
 @Module({
   controllers: [],
@@ -33,7 +36,7 @@ import { TokensModule } from './api/tokens/tokens.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      models: [UsersModel, AdvertsModel],
+      models: [UsersModel, AdvertsModel, ImagesModel, ImagesTypeModel],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
@@ -47,6 +50,7 @@ import { TokensModule } from './api/tokens/tokens.module';
     AuthModule,
     ProfileModule,
     TokensModule,
+    ImagesModule,
   ],
 })
 export class AppModule {}

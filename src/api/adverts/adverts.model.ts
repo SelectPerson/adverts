@@ -8,6 +8,8 @@ import {
 } from 'sequelize-typescript';
 import { UsersModel } from '../users/users.model';
 import { iAdvert } from '../../types/Adverts/Advert';
+import { ImagesModel } from '../images/images.model';
+import { ImagesTypeModel } from '../images/images-type.model';
 
 @Table({ tableName: 'adverts' })
 export class AdvertsModel extends Model implements iAdvert {
@@ -41,4 +43,14 @@ export class AdvertsModel extends Model implements iAdvert {
     type: DataType.BOOLEAN,
   })
   isModerated: boolean;
+
+  @ForeignKey(() => ImagesModel)
+  @Column({
+    type: DataType.INTEGER,
+    field: 'typeId',
+  })
+  typeId: number;
+
+  @BelongsTo(() => ImagesModel)
+  type: ImagesModel;
 }

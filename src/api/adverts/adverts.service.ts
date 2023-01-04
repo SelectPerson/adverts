@@ -35,6 +35,7 @@ export class AdvertsService {
       where: {
         userId,
       },
+      include: { all: true },
     });
     return {
       status: HttpStatus.OK,

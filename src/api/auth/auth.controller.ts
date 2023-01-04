@@ -95,9 +95,7 @@ export class AuthController {
         refreshToken: currentRefreshToken,
       });
       await response.clearCookie('jwt');
-      return {
-        status: HttpStatus.OK,
-      };
+      return {};
     } catch (e) {
       return new HttpException(
         'Error during log out',

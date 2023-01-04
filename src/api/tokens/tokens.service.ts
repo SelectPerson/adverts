@@ -16,7 +16,7 @@ export class TokensService {
   }
 
   async removeRefreshToken({ userId, refreshToken }) {
-    await this.tokenRepository.findOne({
+    const getToken = await this.tokenRepository.findOne({
       where: {
         userId,
         refreshToken,
