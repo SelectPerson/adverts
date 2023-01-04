@@ -44,4 +44,9 @@ export class UsersModel extends Model implements iUser {
 
   @HasMany(() => AdvertsModel)
   adverts: AdvertsModel[];
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  telegramChatId: number;
 }

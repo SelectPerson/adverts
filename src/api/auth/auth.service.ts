@@ -66,9 +66,6 @@ export class AuthService {
   async generateTokens(user: UsersModel, currentRefreshToken) {
     const userPayload = { ...user };
     delete userPayload.password;
-
-    console.log('currentRefreshToken', currentRefreshToken);
-
     const at = await this.jwtService.signAsync(userPayload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: process.env.ACCESS_TOKEN_EXPIRED,

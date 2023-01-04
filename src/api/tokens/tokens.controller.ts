@@ -37,10 +37,7 @@ export class TokensController {
     if (!currentRefreshToken)
       throw new HttpException('Refresh token not found', HttpStatus.FORBIDDEN);
     const decodeUserToken: any = this.jwtService.decode(currentRefreshToken);
-    // console.log('decodeToken', decodeUserToken.id);
-    // if (!refreshToken)
-    //
-    //
+
     const userId = decodeUserToken.id;
     const getUser = await this.userService.getUserById(userId);
     const result = await this.authService.generateTokens(
