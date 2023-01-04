@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { Public } from '../../core/decorators';
@@ -6,12 +14,14 @@ import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
 import { TokensService } from '../tokens/tokens.service';
 import { setCookieJwt } from '../../core/utils/setCookieJwt.utils';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private tokenService: TokensService,
+    private jwtService: JwtService,
   ) {}
 
   @Public()
@@ -35,7 +45,10 @@ export class AuthController {
 
       return result;
     } catch (e) {
-      return 'Auth Error';
+      return new HttpException(
+        'Error during log in',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -59,7 +72,37 @@ export class AuthController {
       }
       return result;
     } catch (e) {
-      return 'Register Error';
+      return new HttpException(
+        'Error during registration',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/logout')
+  async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      const currentRefreshToken = request?.cookies?.jwt;
+      const decodeUserToken: any = this.jwtService.decode(currentRefreshToken);
+
+      const userId = decodeUserToken.id;
+
+      await this.tokenService.removeRefreshToken({
+        userId,
+        refreshToken: currentRefreshToken,
+      });
+      await response.clearCookie('jwt');
+      return {
+        status: HttpStatus.OK,
+      };
+    } catch (e) {
+      return new HttpException(
+        'Error during log out',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

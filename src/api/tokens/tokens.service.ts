@@ -14,4 +14,13 @@ export class TokensService {
       refreshToken,
     });
   }
+
+  async removeRefreshToken({ userId, refreshToken }) {
+    await this.tokenRepository.findOne({
+      where: {
+        userId,
+        refreshToken,
+      },
+    });
+  }
 }
