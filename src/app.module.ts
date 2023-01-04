@@ -36,6 +36,7 @@ import { TokensModule } from './api/tokens/tokens.module';
       models: [UsersModel, AdvertsModel],
       autoLoadModels: true,
       synchronize: true,
+      logging: false,
     }),
 
     TelegrafModule.forRoot({

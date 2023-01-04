@@ -44,11 +44,7 @@ export class AuthService {
       password: hashPassword,
     });
 
-    const generateTokens = await this.generateTokens(
-      user.dataValues,
-      currentRefreshToken,
-    );
-    return generateTokens;
+    return await this.generateTokens(user.dataValues, currentRefreshToken);
   }
 
   private async validateUser(validateDto: LoginDto | RegisterDto) {
@@ -70,8 +66,6 @@ export class AuthService {
   async generateTokens(user: UsersModel, currentRefreshToken) {
     const userPayload = { ...user };
     delete userPayload.password;
-
-    console.log('currentRefreshToken', currentRefreshToken);
 
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(userPayload, {

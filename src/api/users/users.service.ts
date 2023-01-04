@@ -43,6 +43,11 @@ export class UsersService {
     return user;
   }
 
+  async getUserById(id) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    return user;
+  }
+
   async getAllUsers() {
     const user = await this.userRepository.findAll({
       include: { all: true },

@@ -4,6 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { TokensModel } from './tokens.model';
 import { TokensController } from './tokens.controller';
 import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [TokensController],
@@ -11,6 +12,7 @@ import { AuthModule } from '../auth/auth.module';
   imports: [
     SequelizeModule.forFeature([TokensModel]),
     forwardRef(() => AuthModule),
+    forwardRef(() => UsersModule),
   ],
   exports: [TokensService],
 })

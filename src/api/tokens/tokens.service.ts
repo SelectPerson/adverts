@@ -16,6 +16,10 @@ export class TokensService {
       },
     });
 
+    console.log('currentRefreshToken | ', currentRefreshToken);
+    // console.log('refreshToken | ', refreshToken);
+    // console.log('existingToken', existingToken);
+
     if (existingToken) {
       await existingToken.update({ ...existingToken, refreshToken });
     } else {

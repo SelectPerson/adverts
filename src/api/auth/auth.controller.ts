@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { Public } from '../../core/decorators';
 import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
 import { TokensService } from '../tokens/tokens.service';
+import { setCookieJwt } from '../../core/utils/setCookieJwt.utils';
 
 @Controller('auth')
 export class AuthController {
@@ -12,13 +13,6 @@ export class AuthController {
     private authService: AuthService,
     private tokenService: TokensService,
   ) {}
-
-  async setCookieJwt(response, refreshToken) {
-    return await response.cookie('jwt', refreshToken, {
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 1000,
-    });
-  }
 
   @Public()
   @Post('/login')
@@ -32,7 +26,7 @@ export class AuthController {
         loginDto,
         request.cookies.jwt,
       );
-      await this.setCookieJwt(response, result.refreshToken);
+      await setCookieJwt(response, result.refreshToken);
       return result;
     } catch (e) {
       return e;
@@ -51,7 +45,7 @@ export class AuthController {
         userDto,
         request.cookies.jwt,
       );
-      await this.setCookieJwt(response, result.refreshToken);
+      await setCookieJwt(response, result.refreshToken);
       return result;
     } catch (e) {
       return e;
